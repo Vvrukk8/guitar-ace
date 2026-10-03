@@ -319,6 +319,8 @@ button, input {
 
 .led.green {
   background: linear-gradient(180deg, #c8ffd4 0%, #2bff72 42%, #00c944 100%);
+  max-width: 72px;
+  flex: 2.1;
 }
 
 /* Stairstep: shortest on the left (low), tallest on the right (high). */
