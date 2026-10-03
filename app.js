@@ -153,6 +153,7 @@
     return 0.045 - (s / 100) * 0.038;
   }
 
+  // YIN: first strong dip is the fundamental, so the B string stays B instead of jumping to E.
   function autoCorrelate(buf, sampleRate) {
     const n = buf.length;
     let rms = 0;
@@ -160,48 +161,40 @@
     rms = Math.sqrt(rms / n);
     if (rms < gateFromSensitivity()) return -1;
 
-    let r1 = 0;
-    let r2 = n - 1;
-    const th = 0.2;
-    for (let i = 0; i < n / 2; i++) {
-      if (Math.abs(buf[i]) < th) { r1 = i; break; }
-    }
-    for (let i = 1; i < n / 2; i++) {
-      if (Math.abs(buf[n - i]) < th) { r2 = n - i; break; }
-    }
-    const slice = buf.subarray(r1, r2);
-    const size = slice.length;
-    if (size < 64) return -1;
+    const half = n >> 1;
+    const yin = new Float32Array(half);
+    let running = 0;
+    const minLag = Math.max(2, Math.floor(sampleRate / MAX_HZ));
+    const maxLag = Math.min(half - 2, Math.floor(sampleRate / MIN_HZ));
 
-    const c = new Float32Array(size);
-    for (let i = 0; i < size; i++) {
+    for (let tau = 1; tau <= maxLag; tau++) {
       let sum = 0;
-      for (let j = 0; j < size - i; j++) sum += slice[j] * slice[j + i];
-      c[i] = sum;
+      for (let i = 0; i < half; i++) {
+        const d = buf[i] - buf[i + tau];
+        sum += d * d;
+      }
+      running += sum;
+      yin[tau] = running === 0 ? 1 : (sum * tau) / running;
     }
 
-    let d = 0;
-    while (d < size - 1 && c[d] > c[d + 1]) d++;
-    let maxval = -1;
-    let maxpos = -1;
-    const minLag = Math.floor(sampleRate / MAX_HZ);
-    const maxLag = Math.min(size - 2, Math.floor(sampleRate / MIN_HZ));
-    for (let i = Math.max(d, minLag); i <= maxLag; i++) {
-      if (c[i] > maxval) {
-        maxval = c[i];
-        maxpos = i;
+    const threshold = 0.12;
+    let tau = -1;
+    for (let i = minLag; i <= maxLag; i++) {
+      if (yin[i] < threshold) {
+        while (i + 1 <= maxLag && yin[i + 1] < yin[i]) i++;
+        tau = i;
+        break;
       }
     }
-    if (maxpos < 0 || c[0] <= 0 || maxval < c[0] * 0.35) return -1;
+    if (tau < 0) return -1;
 
-    const x1 = c[maxpos - 1] || 0;
-    const x2 = c[maxpos];
-    const x3 = c[maxpos + 1] || 0;
-    const a = (x1 + x3 - 2 * x2) / 2;
-    const b = (x3 - x1) / 2;
-    let t0 = maxpos;
-    if (a) t0 = maxpos - b / (2 * a);
-    const freq = sampleRate / t0;
+    const x0 = yin[tau - 1];
+    const x1 = yin[tau];
+    const x2 = yin[tau + 1];
+    const denom = 2 * (2 * x1 - x2 - x0);
+    let better = tau;
+    if (denom) better = tau + (x2 - x0) / denom;
+    const freq = sampleRate / better;
     if (freq < MIN_HZ || freq > MAX_HZ) return -1;
     return freq;
   }
