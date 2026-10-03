@@ -89,12 +89,21 @@
     litIndex = "";
   }
 
+  // Same as Drum Ace: one distance lights both sides. Far = outer reds, then yellow, then green.
+  const PAIR = {
+    0: [4],
+    1: [3, 5],
+    2: [2, 6],
+    3: [1, 7],
+    4: [0, 8],
+  };
+
   function lightSigned(zone) {
-    const key = String(zone);
+    const mag = Math.min(4, Math.abs(zone));
+    const key = String(mag);
     if (key === litIndex) return;
     clearLeds();
-    const idx = zone + 4;
-    if (leds[idx]) leds[idx].classList.add("lit");
+    (PAIR[mag] || PAIR[4]).forEach((i) => leds[i].classList.add("lit"));
     litIndex = key;
   }
 
