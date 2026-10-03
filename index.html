@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1, user-scalable=no" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Guitar Ace" />
+  <meta name="theme-color" content="#07080c" />
+  <title>Guitar Ace</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="app">
+    <header class="header">
+      <div class="brand">
+        <span class="mark" aria-hidden="true"><i></i><i></i><i></i></span>
+        <h1>Guitar Ace</h1>
+      </div>
+      <p class="version">Version 1.0</p>
+      <p class="subtitle">Mic hears your guitar — green when in tune</p>
+    </header>
+
+    <section class="bpm-panel" aria-label="Reference pitch">
+      <label class="bpm-label" for="a4Input">Reference A4</label>
+      <div class="bpm-controls">
+        <button type="button" class="bpm-btn" id="a4Down" aria-label="Lower reference">−</button>
+        <input type="number" id="a4Input" inputmode="numeric" min="430" max="450" value="440" aria-label="A4 reference in Hz" />
+        <button type="button" class="bpm-btn" id="a4Up" aria-label="Raise reference">+</button>
+      </div>
+      <input type="range" id="a4Slider" min="430" max="450" value="440" aria-label="A4 slider" />
+    </section>
+
+    <section class="led-stage" aria-label="Tune LED bar" aria-live="polite">
+      <div class="led-row" id="ledRow" role="img" aria-label="Nine LED tune zones, flat on the left, sharp on the right"></div>
+      <div class="led-legend">
+        <span>flat</span>
+        <span class="legend-center">ON</span>
+        <span>sharp</span>
+      </div>
+    </section>
+
+    <section class="playing" aria-live="polite">
+      <span class="readout-label">Note</span>
+      <span class="playing-bpm" id="noteName">—</span>
+      <span class="cents" id="centsReadout">—</span>
+    </section>
+
+    <section class="mic-section">
+      <div class="level-meter" aria-hidden="true">
+        <div class="level-fill" id="levelFill"></div>
+      </div>
+      <button type="button" class="mic-btn" id="micBtn" aria-pressed="false">
+        <span class="mic-icon" aria-hidden="true">🎤</span>
+        <span class="mic-label" id="micLabel">Enable Microphone</span>
+      </button>
+      <p class="hint" id="statusHint">Grant mic access, then play one string toward the phone.</p>
+      <div class="sens-row">
+        <label for="sensSlider">Sensitivity</label>
+        <input type="range" id="sensSlider" min="1" max="100" value="55" aria-label="Pitch detection sensitivity" />
+      </div>
+    </section>
+
+    <footer class="footer">
+      <button type="button" class="ghost-btn" id="resetBtn">Reset</button>
+    </footer>
+  </div>
+  <script src="app.js"></script>
+</body>
+</html>
