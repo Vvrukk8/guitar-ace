@@ -311,20 +311,28 @@ button, input {
 
 .led.red {
   background: linear-gradient(180deg, #ff9b9b 0%, #ff3b3b 48%, #d40f0f 100%);
-  height: 72%;
 }
 
 .led.yellow {
   background: linear-gradient(180deg, #fff4ad 0%, #ffd400 46%, #e0a000 100%);
-  height: 85%;
 }
 
 .led.green {
   background: linear-gradient(180deg, #c8ffd4 0%, #2bff72 42%, #00c944 100%);
-  height: 100%;
   max-width: 72px;
   flex: 2.1;
 }
+
+/* Stairstep: shortest on the left (low), tallest on the right (high). */
+.led:nth-child(1) { height: 28%; }
+.led:nth-child(2) { height: 37%; }
+.led:nth-child(3) { height: 46%; }
+.led:nth-child(4) { height: 55%; }
+.led:nth-child(5) { height: 64%; }
+.led:nth-child(6) { height: 73%; }
+.led:nth-child(7) { height: 82%; }
+.led:nth-child(8) { height: 91%; }
+.led:nth-child(9) { height: 100%; }
 
 .led.lit {
   opacity: 1;
